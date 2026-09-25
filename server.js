@@ -109,6 +109,41 @@ function startRound(t){
   t.deck=shuffle(deck());t.round++;t.pot=0;t.currentChaal=20;t.turnIndex=0;t.phase="draw";t.cardNo=0;t.discarded=[];t.winner=null;t.showdown=null;
   t.players.forEach(p=>{p.hand=[];p.bet=0;p.seen=false;p.round=t.round;});
   sendTable(t);
+  setTimeout(()=>dealNextCard(t),500);
+}
+
+function dealNextCard(t){
+  if(!tables.has(t.id)||t.phase!=="draw")return;
+  const ps=[...t.players.values()].filter(p=>p.connected);
+  if(!ps.length)return;
+  const current=ps[t.turnIndex];
+  if(!current){
+    t.turnIndex=0;
+    return dealNextCard(t);
+  }
+  if(current.hand.length<3){
+    const card=t.deck.pop();
+    current.hand.push(card);
+    t.cardNo=current.hand.length;
+    sendTable(t);
+  }
+  const allDealt=ps.every(p=>p.hand.length===3);
+  if(allDealt){
+    t.turnIndex=[...t.players.values()].findIndex(p=>p.connected);
+    if(t.turnIndex<0)t.turnIndex=0;
+    t.phase="action";
+    t.cardNo=3;
+    sendTable(t);
+    return;
+  }
+  let next=(t.turnIndex+1)%ps.length;
+  for(let step=0;step<ps.length;step++){
+    if(ps[next].hand.length<3)break;
+    next=(next+1)%ps.length;
+  }
+  const nextPlayer=ps[next];
+  t.turnIndex=[...t.players.values()].findIndex(p=>p.id===nextPlayer.id);
+  setTimeout(()=>dealNextCard(t),650);
 }
 
 io.on("connection",s=>{
