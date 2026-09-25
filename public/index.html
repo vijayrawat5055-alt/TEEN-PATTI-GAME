@@ -66,24 +66,27 @@ $("status").textContent=x.phase==="waiting"?"Waiting for players":x.phase==="dra
 $("winnerText").textContent=x.winner?(x.winner.name==="Tie"?"🤝 Show: Tie":"🏆 Winner: "+x.winner.name):"";
 const me=x.players.find(p=>p.id===myId),cur=x.players.find(p=>p.id===x.currentPlayerId),myTurn=cur?.id===myId;
 $("turnText").textContent=x.phase==="finished"?(x.winner?.name==="Tie"?"🤝 Showdown tie":x.winner?"🏆 "+x.winner.name+" won the pot":"Round finished"):cur?(myTurn?"👉 Aapki turn":"👉 "+cur.name+" ki turn chal rahi hai"):"Round start hone ka wait...";
-$("choiceText").textContent=myTurn?(me?.seen?"Card dekh liya: Chaal, Pack ya Show karo":"Blind Chaal karo ya View Cards dabao"):(x.phase==="finished"?"Showdown complete":"");
+$("choiceText").textContent=myTurn?(me?.seen?"Card dekh liya: Chaal, Pack ya Show karo • Current Chaal: "+x.currentChaal:"Blind Chaal karo ya View Cards dabao • Minimum Chaal: "+x.currentChaal):(x.phase==="finished"?"Showdown complete":"");
+$("betAmount").min=x.currentChaal;$("chaalAmount").min=x.currentChaal;
+if(+$("betAmount").value<x.currentChaal)$("betAmount").value=x.currentChaal;
+if(+$("chaalAmount").value<x.currentChaal)$("chaalAmount").value=x.currentChaal;
 $("start").disabled=!(joined&&x.players.length>=2&&(x.phase==="waiting"||x.phase==="finished"));
 const activeCount=x.players.filter(p=>p.revealed>0).length;
 const actionOn=myTurn&&x.phase==="action";
 $("blindActions").style.display=actionOn&&!me?.seen?"block":"none";
 $("seenActions").style.display=actionOn&&!!me?.seen?"block":"none";
 ["blind","view","chaal","pack","show"].forEach(id=>$(id).disabled=true);
-if(actionOn&&!me?.seen){$("blind").disabled=me.chips<20||(+$("betAmount").value<20);$("view").disabled=false}
+if(actionOn&&!me?.seen){$("blind").disabled=me.chips<x.currentChaal||(+$("betAmount").value<x.currentChaal);$("view").disabled=false}
 if(actionOn&&me?.seen){
-$("chaal").disabled=me.chips<20||(+$("chaalAmount").value<20);
+$("chaal").disabled=me.chips<x.currentChaal||(+$("chaalAmount").value<x.currentChaal);
 $("pack").disabled=false;
 $("show").disabled=activeCount!==2;
 }
 const seats=["seat1","seat2","seat3","seat4","seat5"];seats.forEach((id,i)=>{$(id).innerHTML=x.players[i]?seatHtml(x.players[i]):"";$(id).classList.toggle("turn",!!x.players[i]&&x.players[i].turn);$(id).classList.toggle("offline",!!x.players[i]&&!x.players[i].connected)});
 $("players").innerHTML=x.players.map(p=>'<span class="mini">'+(p.turn?"🟡 ":"")+p.name+" • 🪙 "+p.chips+" • "+p.revealed+"/3 cards"+(p.seen?" • 👀":" • 🕶️")+"</span>").join("");
 $("discarded").innerHTML=(x.discarded||[]).flatMap(d=>d.cards.map(c=>'<div class="card" title="'+d.name+'">'+c.rank+'<span class="big '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.suit+"</span>"+c.rank+"</div>")).join("");
-if(x.phase==="action"&&x.currentPlayerId!==lastTurn)animateDeal();lastTurn=x.currentPlayerId;
+if(x.phase==="draw"&&x.currentPlayerId!==lastTurn){const targetIndex=x.players.findIndex(p=>p.id===x.currentPlayerId);animateDeal(targetIndex);}lastTurn=x.currentPlayerId;
 });
 s.on("hand",cs=>{$("hand").innerHTML=cs.map(c=>'<div class="card"><span>'+c.rank+'</span><span class="big '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.suit+"</span><span>"+c.rank+"</span></div>").join("")});
-function animateDeal(){const d=document.createElement("div");d.className="dealCard";d.style.left="50%";d.style.top="48%";document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform="translate(-120px,120px) rotate(-8deg)";d.style.opacity="0"});setTimeout(()=>d.remove(),750)}
+function animateDeal(targetIndex){const d=document.createElement("div");d.className="dealCard";const deckEl=document.querySelector(".deck3d"),seatEl=$("seat"+(targetIndex+1));if(!deckEl||!seatEl)return;const a=deckEl.getBoundingClientRect(),b=seatEl.getBoundingClientRect();d.style.left=(a.left+a.width/2-31)+"px";d.style.top=(a.top+a.height/2-45)+"px";document.body.appendChild(d);const tx=b.left+b.width/2-(a.left+a.width/2),ty=b.top+b.height/2-(a.top+a.height/2);requestAnimationFrame(()=>{d.style.transform=`translate(${tx}px,${ty}px) rotate(-8deg) scale(.82)`;d.style.opacity="0"});setTimeout(()=>d.remove(),750)}
 </script></body></html>
