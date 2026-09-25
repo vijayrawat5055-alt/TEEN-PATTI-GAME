@@ -1,0 +1,1 @@
+{"name":"teen-patti-game","version":"1.0.0","private":true,"description":"Live multiplayer Teen Patti game","main":"server.js","scripts":{"start":"node server.js"},"dependencies":{"express":"^5.1.0","socket.io":"^4.8.1"}}
