@@ -47,7 +47,7 @@ function sendTable(t){
   io.to(t.id).emit("table:update",publicTable(t));
   t.players.forEach(p=>{const revealAll=t.phase==="finished"&&t.showdown;io.to(p.id).emit("hand",(revealAll||p.seen)?(p.hand||[]):[]);});
 }
-function nextTurn(t){const ps=[...t.players.values()];if(!ps.length){t.phase="waiting";return;}t.turnIndex=(t.turnIndex+1)%ps.length;t.phase="draw";t.cardNo=0;}
+function nextTurn(t){const ps=[...t.players.values()];if(!ps.length){t.phase="waiting";return;}let i=t.turnIndex;for(let step=0;step<ps.length;step++){i=(i+1)%ps.length;if(ps[i].connected&&ps[i].hand.length>0){t.turnIndex=i;t.phase="action";t.cardNo=ps[i].hand.length;return;}}t.phase="finished";}
 function awardWinner(t,winner,reason){
   const gross=t.pot;
   const fee=Math.floor(gross*0.03);
@@ -88,7 +88,11 @@ io.on("connection",s=>{
     const t=tables.get(d?.tableId),p=t?.players.get(s.id),ps=t?[...t.players.values()]:[];
     if(!p||!t||t.phase!=="draw"||ps[t.turnIndex]?.id!==s.id)return a?.({ok:false,error:"Abhi aapki turn nahi hai"});
     if(p.hand.length>=3)return a?.({ok:false,error:"Aapke 3 cards already hain"});
-    const card=t.deck.pop();p.hand.push(card);t.cardNo=p.hand.length;t.phase="action";sendTable(t);a?.({ok:true});
+    const card=t.deck.pop();p.hand.push(card);t.cardNo=p.hand.length;
+    const allDealt=[...t.players.values()].filter(x=>x.connected).length>0&&[...t.players.values()].filter(x=>x.connected).every(x=>x.hand.length===3);
+    if(allDealt){t.turnIndex=[...t.players.values()].findIndex(x=>x.connected);t.phase="action";t.cardNo=3;}
+    else {let i=t.turnIndex;for(let step=0;step<ps.length;step++){i=(i+1)%ps.length;if(ps[i].connected&&ps[i].hand.length<3){t.turnIndex=i;break;}}t.phase="draw";}
+    sendTable(t);a?.({ok:true});
   });
 
   s.on("view",(d,a)=>{
