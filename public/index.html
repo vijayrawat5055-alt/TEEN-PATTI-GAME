@@ -11,82 +11,79 @@ main{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content
 .pot{font-size:34px;font-weight:800}.deck3d{width:86px;height:122px;position:relative;margin:15px auto;transform:rotateX(10deg) rotateZ(-5deg);transform-style:preserve-3d;animation:float 2.4s ease-in-out infinite}.deck3d div{position:absolute;inset:0;border-radius:10px;background:repeating-linear-gradient(45deg,#172b58 0 4px,#263d70 4px 8px);border:4px solid #f3e5c2;box-shadow:0 8px 16px #0008}
 @keyframes float{50%{transform:rotateX(10deg) rotateZ(5deg) translateY(-5px)}}.seat{position:absolute;width:170px;text-align:center;padding:8px}.seat1{top:12px;left:50%;transform:translateX(-50%)}.seat2{top:145px;right:15px}.seat3{bottom:25px;right:110px}.seat4{bottom:25px;left:110px}.seat5{top:145px;left:15px}
 .avatar{width:62px;height:62px;border-radius:50%;object-fit:cover;border:3px solid #d7b66b;background:#18243b;display:block;margin:auto;box-shadow:0 8px 15px #0009}.name{font-weight:800;margin-top:5px}.chips{font-size:13px;color:#d6e0ef}.turn{outline:3px solid #ffd66b;outline-offset:4px;animation:pulse 1s infinite}.offline{opacity:.45}
-@keyframes pulse{50%{box-shadow:0 0 22px #ffd66b}}.hand{display:flex;gap:12px;justify-content:center;min-height:128px;margin-top:12px;perspective:900px}.card{width:78px;height:112px;border-radius:10px;background:linear-gradient(145deg,#fff,#e6e0d3);color:#151515;border:3px solid #fff;box-shadow:0 12px 22px #0008;display:flex;flex-direction:column;justify-content:space-between;padding:7px;font-weight:800;transform:rotateY(0deg);transition:.45s transform}.card.back{background:repeating-linear-gradient(45deg,#172b58 0 5px,#2e477c 5px 10px);border-color:#e9d6a5;color:#fff}.card .big{font-size:30px;text-align:center;margin:auto}.red{color:#b51f2b}.actions{text-align:center}.turnText{font-size:18px;font-weight:800;margin:8px 0}.gameBtn{min-width:145px}.packBtn{background:#a83a3a}.viewBtn{background:#2d8a68}.dealCard{position:fixed;z-index:20;width:62px;height:90px;border-radius:9px;background:repeating-linear-gradient(45deg,#172b58 0 5px,#2e477c 5px 10px);border:3px solid #e9d6a5;box-shadow:0 12px 25px #000b;pointer-events:none;transition:transform .7s ease,opacity .25s}.playersbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.mini{background:#0d1729;border:1px solid #33435f;border-radius:12px;padding:8px 12px}.profileRow{display:flex;align-items:center;gap:10px}.preview{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #65769b}
+@keyframes pulse{50%{box-shadow:0 0 22px #ffd66b}}.hand{display:flex;gap:12px;justify-content:center;min-height:128px;margin-top:12px;perspective:900px}.card{width:78px;height:112px;border-radius:10px;background:linear-gradient(145deg,#fff,#e6e0d3);color:#151515;border:3px solid #fff;box-shadow:0 12px 22px #0008;display:flex;flex-direction:column;justify-content:space-between;padding:7px;font-weight:800}.card .big{font-size:30px;text-align:center;margin:auto}.red{color:#b51f2b}.gameBtn{min-width:145px}.packBtn{background:#a83a3a}.viewBtn{background:#2d8a68}.showBtn{background:#d08a24}.dealCard{position:fixed;z-index:20;width:62px;height:90px;border-radius:9px;background:repeating-linear-gradient(45deg,#172b58 0 5px,#2e477c 5px 10px);border:3px solid #e9d6a5;box-shadow:0 12px 25px #000b;pointer-events:none;transition:transform .7s ease,opacity .25s}.playersbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.mini{background:#0d1729;border:1px solid #33435f;border-radius:12px;padding:8px}.profileRow{display:flex;align-items:center;gap:10px}.preview{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #65769b}
 @media(max-width:750px){.row{grid-template-columns:1fr}.table{height:460px}.seat{width:130px}.seat2{right:0}.seat3{right:35px}.seat4{left:35px}.seat5{left:0}.avatar{width:52px;height:52px}.centerbox{padding:12px 18px}.hand .card{width:65px;height:95px}}
 </style></head>
 <body><main>
 <div class="top"><h1>♠ Teen Patti 3D Live</h1><div class="badge" id="tableInfo">Table assign hone ka wait...</div></div>
-<div class="panel">
-  <div class="row">
-    <input id="name" value="Player" maxlength="20" placeholder="Your name">
-    <div class="profileRow"><input id="avatar" type="file" accept="image/*"><img id="preview" class="preview" alt="Profile preview"></div>
-    <button id="play">Play Live</button>
-  </div>
-  <div id="msg" class="muted msg">Profile picture choose karo, phir Play Live dabao.</div>
-</div>
+<div class="panel"><div class="row">
+<input id="name" value="Player" maxlength="20" placeholder="Your name">
+<div class="profileRow"><input id="avatar" type="file" accept="image/*"><img id="preview" class="preview" alt="Profile preview"></div>
+<button id="play">Play Live</button>
+</div><div id="msg" class="muted msg">Profile picture choose karo, phir Play Live dabao.</div></div>
 
 <div class="table">
-  <div class="seat seat1" id="seat1"></div><div class="seat seat2" id="seat2"></div><div class="seat seat3" id="seat3"></div><div class="seat seat4" id="seat4"></div><div class="seat seat5" id="seat5"></div>
-  <div class="center"><div class="centerbox"><div class="muted">POT</div><div id="pot" class="pot">0</div><div id="status">Waiting for players</div><div id="discarded" class="hand" style="min-height:95px"></div><div class="deck3d"><div></div><div></div><div></div></div></div></div>
+<div class="seat seat1" id="seat1"></div><div class="seat seat2" id="seat2"></div><div class="seat seat3" id="seat3"></div><div class="seat seat4" id="seat4"></div><div class="seat seat5" id="seat5"></div>
+<div class="center"><div class="centerbox"><div class="muted">POT</div><div id="pot" class="pot">0</div><div id="status">Waiting for players</div><div id="winnerText" class="winnerText"></div><div id="discarded" class="hand" style="min-height:95px"></div><div class="deck3d"><div></div><div></div><div></div></div></div></div>
 </div>
 
 <div class="panel actions">
-  <div class="turnText" id="turnText">Round start hone ka wait...</div>
-  <button id="start" disabled>Start Round</button>
-  <div id="hand" class="hand"></div>
-  <div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
-  <div id="blindActions">
-    <input id="betAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+">
-    <button id="blind" class="gameBtn" disabled>🕶️ Blind Chaal</button>
-    <button id="view" class="gameBtn viewBtn" disabled>👀 View Cards</button>
-  </div>
-  <div id="seenActions" style="display:none">
-    <button id="chaal20" class="gameBtn" disabled>🪙 Chaal 20</button>
-    <button id="chaal50" class="gameBtn" disabled>🪙 Chaal 50</button>
-    <button id="chaal100" class="gameBtn" disabled>🪙 Chaal 100</button>
-    <button id="pack" class="gameBtn packBtn" disabled>✋ Pack</button>
-  </div>
+<div class="turnText" id="turnText">Round start hone ka wait...</div>
+<button id="start" disabled>Start Round</button>
+<div id="hand" class="hand"></div>
+<div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
+<div id="blindActions">
+<input id="betAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+">
+<button id="blind" class="gameBtn" disabled>🕶️ Blind Chaal</button>
+<button id="view" class="gameBtn viewBtn" disabled>👀 View Cards</button>
+</div>
+<div id="seenActions" style="display:none">
+<input id="chaalAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+">
+<button id="chaal" class="gameBtn" disabled>🪙 Chaal</button>
+<button id="pack" class="gameBtn packBtn" disabled>✋ Pack</button>
+<button id="show" class="gameBtn showBtn" disabled>👀 Show</button>
+</div>
 </div>
 <div class="panel"><b>Live Players</b><div id="players" class="playersbar"></div></div>
 </main>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const s=io(),$=id=>document.getElementById(id);let myId=null,tableId=null,joined=false,avatarData="",lastPhase="",lastTurn=null;
-const defaultAvatar=name=>"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#243552"/><text x="60" y="72" text-anchor="middle" font-size="58" fill="white">'+(name||"P").charAt(0).toUpperCase()+'</text></svg>');
+const s=io(),$=id=>document.getElementById(id);let myId=null,tableId=null,joined=false,avatarData="",lastTurn=null;
+const defaultAvatar=name=>"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#243552"/><text x="60" y="72" text-anchor="middle" font-size="58" fill="white">'+(name||"P").charAt(0).toUpperCase()+"</text></svg>");
 $("avatar").addEventListener("change",e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>1200000){$("msg").textContent="Photo 1.2MB se chhoti rakho.";e.target.value="";return}const rd=new FileReader();rd.onload=()=>{avatarData=rd.result;$("preview").src=avatarData};rd.readAsDataURL(f)});
-$("preview").src=defaultAvatar("P");
-s.on("connect",()=>{myId=s.id});
-$("play").onclick=()=>{
- const name=$("name").value.trim()||"Player";avatarData=avatarData||defaultAvatar(name);
- $("play").disabled=true;$("msg").textContent="Table search ho rahi hai...";
- s.emit("player:join",{name,avatar:avatarData},r=>{if(!r?.ok){$("play").disabled=false;$("msg").textContent=r?.error||"Join error";return}joined=true;tableId=r.tableId;$("tableInfo").textContent="Live table";$("msg").textContent="Aap table par aa gaye. 2–5 players ke saath live khelo."});
-};
+$("preview").src=defaultAvatar("P");s.on("connect",()=>{myId=s.id});
+$("play").onclick=()=>{const name=$("name").value.trim()||"Player";avatarData=avatarData||defaultAvatar(name);$("play").disabled=true;$("msg").textContent="Table search ho rahi hai...";s.emit("player:join",{name,avatar:avatarData},r=>{if(!r?.ok){$("play").disabled=false;$("msg").textContent=r?.error||"Join error";return}joined=true;tableId=r.tableId;$("tableInfo").textContent="Live table";$("msg").textContent="Aap table par aa gaye. 2–5 players ke saath live khelo."})};
 $("start").onclick=()=>s.emit("round:start",{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error});
+function bet(amountInput){s.emit("bet",{tableId,amount:+$(amountInput).value},r=>{if(!r?.ok)$("msg").textContent=r.error})}
 function action(ev){s.emit(ev,{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error})}
-$("blind").onclick=()=>s.emit("bet",{tableId,amount:+$("betAmount").value},r=>{if(!r?.ok)$("msg").textContent=r.error});
-$("view").onclick=()=>action("view");
-$("chaal20").onclick=()=>s.emit("bet",{tableId,amount:20},r=>{if(!r?.ok)$("msg").textContent=r.error});
-$("chaal50").onclick=()=>s.emit("bet",{tableId,amount:50},r=>{if(!r?.ok)$("msg").textContent=r.error});
-$("chaal100").onclick=()=>s.emit("bet",{tableId,amount:100},r=>{if(!r?.ok)$("msg").textContent=r.error});
-$("pack").onclick=()=>action("pack");
-function seatHtml(p){const av=p.avatar||defaultAvatar(p.name);return '<img class="avatar" src="'+av.replace(/"/g,'&quot;')+'" alt="Profile"><div class="name">'+p.name.replace(/[&<>"']/g,"")+'</div><div class="chips">🪙 '+p.chips+(p.connected?"":" • offline")+'</div>'}
+$("blind").onclick=()=>bet("betAmount");$("view").onclick=()=>action("view");$("chaal").onclick=()=>bet("chaalAmount");$("pack").onclick=()=>action("pack");$("show").onclick=()=>action("show");
+
+function seatHtml(p){const av=p.avatar||defaultAvatar(p.name);return '<img class="avatar" src="'+av.replace(/"/g,"&quot;")+'" alt="Profile"><div class="name">'+p.name.replace(/[&<>"']/g,"")+'</div><div class="chips">🪙 '+p.chips+(p.connected?"":" • offline")+"</div>"}
 s.on("table:update",x=>{
- if(x.tableId!==tableId)return;
- $("pot").textContent=x.pot;
- $("status").textContent=x.phase==="waiting"?"Waiting for players":x.phase==="draw"?"Card dealing":x.phase==="action"?"Player action":"Next player";
- const me=x.players.find(p=>p.id===myId),cur=x.players.find(p=>p.id===x.currentPlayerId),myTurn=cur?.id===myId;
- $("turnText").textContent=cur?(myTurn?"👉 Aapki turn: Blind Chaal ya View Cards":"👉 "+cur.name+" ki turn chal rahi hai"):"Round start hone ka wait...";
- $("choiceText").textContent=myTurn?(me?.seen?"Card dekh liya: Chaal ya Pack karo":"Blind Chaal karo ya View Cards dabao"):"";
- const canStart=joined&&x.players.length>=2&&x.phase==="waiting";$("start").disabled=!canStart;
- const actionOn=myTurn&&x.phase==="action";
- $("blindActions").style.display=actionOn&&!me?.seen?"block":"none";
- $("seenActions").style.display=actionOn&&!!me?.seen?"block":"none";
- ["blind","view","chaal20","chaal50","chaal100","pack"].forEach(id=>$(id).disabled=true);
- if(actionOn&&!me?.seen){$("blind").disabled=me.chips<20||(+$("betAmount").value<20);$("view").disabled=false}
- if(actionOn&&me?.seen){$("chaal20").disabled=me.chips<20;$("chaal50").disabled=me.chips<50;$("chaal100").disabled=me.chips<100;$("pack").disabled=false}
- const seats=["seat1","seat2","seat3","seat4","seat5"];seats.forEach((id,i)=>{$(id).innerHTML=x.players[i]?seatHtml(x.players[i]):"";$(id).classList.toggle("turn",!!x.players[i]&&x.players[i].turn);$(id).classList.toggle("offline",!!x.players[i]&&!x.players[i].connected)});
- $("players").innerHTML=x.players.map(p=>'<span class="mini">'+(p.turn?"🟡 ":"")+p.name+" • 🪙 "+p.chips+" • "+p.revealed+"/3 cards"+(p.seen?" • 👀":" • 🕶️")+"</span>").join("");
- $("discarded").innerHTML=(x.discarded||[]).flatMap(d=>d.cards.map(c=>'<div class="card" title="'+d.name+'">'+c.rank+'<span class="big '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.suit+'</span>'+c.rank+'</div>')).join("");
- if(x.phase==="action"&&x.currentPlayerId!==lastTurn){animateDeal();} lastTurn=x.currentPlayerId;lastPhase=x.phase;
-});s.on("hand",cs=>{$("hand").innerHTML=cs.map(c=>'<div class="card"><span>'+c.rank+'</span><span class="big '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.suit+'</span><span>'+c.rank+'</span></div>').join("")});
+if(x.tableId!==tableId)return;
+$("pot").textContent=x.pot;
+$("status").textContent=x.phase==="waiting"?"Waiting for players":x.phase==="draw"?"Card dealing":x.phase==="action"?"Player action":"Round finished";
+$("winnerText").textContent=x.winner?(x.winner.name==="Tie"?"🤝 Show: Tie":"🏆 Winner: "+x.winner.name):"";
+const me=x.players.find(p=>p.id===myId),cur=x.players.find(p=>p.id===x.currentPlayerId),myTurn=cur?.id===myId;
+$("turnText").textContent=x.phase==="finished"?(x.winner?.name==="Tie"?"🤝 Showdown tie":x.winner?"🏆 "+x.winner.name+" won the pot":"Round finished"):cur?(myTurn?"👉 Aapki turn":"👉 "+cur.name+" ki turn chal rahi hai"):"Round start hone ka wait...";
+$("choiceText").textContent=myTurn?(me?.seen?"Card dekh liya: Chaal, Pack ya Show karo":"Blind Chaal karo ya View Cards dabao"):(x.phase==="finished"?"Showdown complete":"");
+$("start").disabled=!(joined&&x.players.length>=2&&(x.phase==="waiting"||x.phase==="finished"));
+const activeCount=x.players.filter(p=>p.revealed>0).length;
+const actionOn=myTurn&&x.phase==="action";
+$("blindActions").style.display=actionOn&&!me?.seen?"block":"none";
+$("seenActions").style.display=actionOn&&!!me?.seen?"block":"none";
+["blind","view","chaal","pack","show"].forEach(id=>$(id).disabled=true);
+if(actionOn&&!me?.seen){$("blind").disabled=me.chips<20||(+$("betAmount").value<20);$("view").disabled=false}
+if(actionOn&&me?.seen){
+$("chaal").disabled=me.chips<20||(+$("chaalAmount").value<20);
+$("pack").disabled=false;
+$("show").disabled=activeCount!==2;
+}
+const seats=["seat1","seat2","seat3","seat4","seat5"];seats.forEach((id,i)=>{$(id).innerHTML=x.players[i]?seatHtml(x.players[i]):"";$(id).classList.toggle("turn",!!x.players[i]&&x.players[i].turn);$(id).classList.toggle("offline",!!x.players[i]&&!x.players[i].connected)});
+$("players").innerHTML=x.players.map(p=>'<span class="mini">'+(p.turn?"🟡 ":"")+p.name+" • 🪙 "+p.chips+" • "+p.revealed+"/3 cards"+(p.seen?" • 👀":" • 🕶️")+"</span>").join("");
+$("discarded").innerHTML=(x.discarded||[]).flatMap(d=>d.cards.map(c=>'<div class="card" title="'+d.name+'">'+c.rank+'<span class="big '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.suit+"</span>"+c.rank+"</div>")).join("");
+if(x.phase==="action"&&x.currentPlayerId!==lastTurn)animateDeal();lastTurn=x.currentPlayerId;
+});
+s.on("hand",cs=>{$("hand").innerHTML=cs.map(c=>'<div class="card"><span>'+c.rank+'</span><span class="big '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.suit+"</span><span>"+c.rank+"</span></div>").join("")});
+function animateDeal(){const d=document.createElement("div");d.className="dealCard";d.style.left="50%";d.style.top="48%";document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform="translate(-120px,120px) rotate(-8deg)";d.style.opacity="0"});setTimeout(()=>d.remove(),750)}
 </script></body></html>
