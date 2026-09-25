@@ -36,8 +36,8 @@ main{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content
   <div id="hand" class="hand"></div>
   <div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
   <div id="blindActions">
-    <button id="blind20" class="gameBtn" disabled>👁️ Blind Chaal 20</button>
-    <button id="blind50" class="gameBtn" disabled>👁️ Blind Chaal 50</button>
+    <input id="betAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+">
+    <button id="blind" class="gameBtn" disabled>🕶️ Blind Chaal</button>
     <button id="view" class="gameBtn viewBtn" disabled>👀 View Cards</button>
   </div>
   <div id="seenActions" style="display:none">
@@ -63,8 +63,7 @@ $("play").onclick=()=>{
 };
 $("start").onclick=()=>s.emit("round:start",{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error});
 function action(ev){s.emit(ev,{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error})}
-$("blind20").onclick=()=>s.emit("bet",{tableId,amount:20},r=>{if(!r?.ok)$("msg").textContent=r.error});
-$("blind50").onclick=()=>s.emit("bet",{tableId,amount:50},r=>{if(!r?.ok)$("msg").textContent=r.error});
+$("blind").onclick=()=>s.emit("bet",{tableId,amount:+$("betAmount").value},r=>{if(!r?.ok)$("msg").textContent=r.error});
 $("view").onclick=()=>action("view");
 $("chaal20").onclick=()=>s.emit("bet",{tableId,amount:20},r=>{if(!r?.ok)$("msg").textContent=r.error});
 $("chaal50").onclick=()=>s.emit("bet",{tableId,amount:50},r=>{if(!r?.ok)$("msg").textContent=r.error});
@@ -82,8 +81,8 @@ s.on("table:update",x=>{
  const actionOn=myTurn&&x.phase==="action";
  $("blindActions").style.display=actionOn&&!me?.seen?"block":"none";
  $("seenActions").style.display=actionOn&&!!me?.seen?"block":"none";
- ["blind20","blind50","view","chaal20","chaal50","chaal100","pack"].forEach(id=>$(id).disabled=true);
- if(actionOn&&!me?.seen){$("blind20").disabled=me.chips<20;$("blind50").disabled=me.chips<50;$("view").disabled=false}
+ ["blind","view","chaal20","chaal50","chaal100","pack"].forEach(id=>$(id).disabled=true);
+ if(actionOn&&!me?.seen){$("blind").disabled=me.chips<20||(+$("betAmount").value<20);$("view").disabled=false}
  if(actionOn&&me?.seen){$("chaal20").disabled=me.chips<20;$("chaal50").disabled=me.chips<50;$("chaal100").disabled=me.chips<100;$("pack").disabled=false}
  const seats=["seat1","seat2","seat3","seat4","seat5"];seats.forEach((id,i)=>{$(id).innerHTML=x.players[i]?seatHtml(x.players[i]):"";$(id).classList.toggle("turn",!!x.players[i]&&x.players[i].turn);$(id).classList.toggle("offline",!!x.players[i]&&!x.players[i].connected)});
  $("players").innerHTML=x.players.map(p=>'<span class="mini">'+(p.turn?"🟡 ":"")+p.name+" • 🪙 "+p.chips+" • "+p.revealed+"/3 cards"+(p.seen?" • 👀":" • 🕶️")+"</span>").join("");
