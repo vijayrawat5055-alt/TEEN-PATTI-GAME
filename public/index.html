@@ -14,7 +14,7 @@ main{max-width:1280px;margin:auto;padding:18px}.top{display:flex;justify-content
 <div class="panel"><div class="row"><input id="name" value="Player" maxlength="20" placeholder="Your name"><div class="profileRow"><input id="avatar" type="file" accept="image/*"><img id="preview" class="preview" alt="Profile preview"></div><button id="play">Play Live</button></div><div id="msg" class="muted msg">Profile picture choose karo, phir Play Live dabao.</div></div>
 <div class="table"><div class="seat seat1" id="seat1"></div><div class="seat seat2" id="seat2"></div><div class="seat seat3" id="seat3"></div><div class="seat seat4" id="seat4"></div><div class="seat seat5" id="seat5"></div>
 <div class="center"><div class="centerbox"><div class="muted">POT AMOUNT</div><div id="pot" class="pot">0</div><div id="status">Waiting for players</div><div id="winnerText"></div><div id="discarded" class="hand" style="min-height:80px"></div><div class="deck3d"><div></div><div></div><div></div></div></div></div></div>
-<div class="panel actions"><div class="turnText" id="turnText">Round start hone ka wait...</div><button id="start" disabled>▶ Start Round</button><div id="hand" class="hand"></div><div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
+<div class="panel actions"><div class="turnText" id="turnText">Round start hone ka wait...</div><button id="start" disabled>▶ Start Round / Solo Test</button><div id="hand" class="hand"></div><div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
 <div id="blindActions"><input id="betAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+"><button id="blind" class="gameBtn" disabled>🕶️ Blind Chaal</button><button id="view" class="gameBtn viewBtn" disabled>👀 View Cards</button></div>
 <div id="seenActions" style="display:none"><input id="chaalAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+"><button id="chaal" class="gameBtn" disabled>🪙 Chaal</button><button id="pack" class="gameBtn packBtn" disabled>✋ Pack</button><button id="show" class="gameBtn showBtn" disabled>👀 Show</button></div></div>
 <div class="panel"><b>Live Players</b><div id="players" class="playersbar"></div></div></main><script src="/socket.io/socket.io.js"></script><script>
@@ -22,7 +22,7 @@ const s=io(),$=id=>document.getElementById(id);let myId=null,tableId=null,joined
 const defaultAvatar=name=>"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#243552"/><text x="60" y="72" text-anchor="middle" font-size="58" fill="white">'+(name||"P").charAt(0).toUpperCase()+"</text></svg>");
 $("avatar").addEventListener("change",e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>1200000){$("msg").textContent="Photo 1.2MB se chhoti rakho.";e.target.value="";return}const rd=new FileReader();rd.onload=()=>{avatarData=rd.result;$("preview").src=avatarData};rd.readAsDataURL(f)});
 $("preview").src=defaultAvatar("P");s.on("connect",()=>{myId=s.id});
-$("play").onclick=()=>{const name=$("name").value.trim()||"Player";avatarData=avatarData||defaultAvatar(name);$("play").disabled=true;$("msg").textContent="Table search ho rahi hai...";s.emit("player:join",{name,avatar:avatarData},r=>{if(!r?.ok){$("play").disabled=false;$("msg").textContent=r?.error||"Join error";return}joined=true;tableId=r.tableId;$("tableInfo").textContent="Live table";$("msg").textContent="Aap table par aa gaye. 2–5 players ke saath live khelo."})};
+$("play").onclick=()=>{const name=$("name").value.trim()||"Player";avatarData=avatarData||defaultAvatar(name);$("play").disabled=true;$("msg").textContent="Table search ho rahi hai...";s.emit("player:join",{name,avatar:avatarData},r=>{if(!r?.ok){$("play").disabled=false;$("msg").textContent=r?.error||"Join error";return}joined=true;tableId=r.tableId;$("tableInfo").textContent="Live table";$("msg").textContent="Aap table par aa gaye. 2–5 players ke saath live khelo. Akela ho to Solo Test se Demo Bot ke saath practice kar sakte ho."})};
 $("start").onclick=()=>s.emit("round:start",{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error});
 function bet(amountInput){s.emit("bet",{tableId,amount:+$(amountInput).value},r=>{if(!r?.ok)$("msg").textContent=r.error})}
 function action(ev){s.emit(ev,{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error})}
@@ -40,7 +40,7 @@ $("choiceText").textContent=myTurn?(me?.seen?"Card dekh liya: Chaal, Pack ya Sho
 $("betAmount").min=x.currentChaal;$("chaalAmount").min=x.currentChaal;
 if(+$("betAmount").value<x.currentChaal)$("betAmount").value=x.currentChaal;
 if(+$("chaalAmount").value<x.currentChaal)$("chaalAmount").value=x.currentChaal;
-$("start").disabled=!(joined&&x.players.length>=2&&(x.phase==="waiting"||x.phase==="finished"));
+$("start").disabled=!(joined&&x.players.length>=1&&(x.phase==="waiting"||x.phase==="finished"));
 const activeCount=x.players.filter(p=>p.revealed>0).length;
 const actionOn=myTurn&&x.phase==="action";
 $("blindActions").style.display=actionOn&&!me?.seen?"block":"none";
