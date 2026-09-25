@@ -1,1 +1,48 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teen Patti Live</title><style>*{box-sizing:border-box}body{margin:0;background:#09111f;color:#fff;font-family:Arial,sans-serif}main{max-width:900px;margin:auto;padding:20px}.panel{background:#131d31;border:1px solid #2c3a58;border-radius:16px;padding:18px;margin:14px 0}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}input,button{padding:12px;border-radius:10px;border:0;font-size:16px}input{background:#0a1325;color:white;border:1px solid #3a4968}button{background:#536dff;color:white;font-weight:bold;cursor:pointer;margin:6px 4px 0 0}.table{height:300px;border-radius:40%;background:#12442f;border:10px solid #58391f;display:flex;align-items:center;justify-content:center;text-align:center}.pot{font-size:30px;font-weight:bold}.players{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.player{background:#111a2c;border-radius:10px;padding:10px;text-align:center}.me{outline:2px solid #7385ff}.hand{display:flex;gap:10px;justify-content:center;margin-top:15px}.card{width:72px;height:105px;background:white;color:#111;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:bold}.red{color:#c22}.muted{color:#aab5cf}@media(max-width:650px){.row{grid-template-columns:1fr}.players{grid-template-columns:repeat(2,1fr)}.table{height:230px;border-radius:25px}}</style></head><body><main><h1>♠ Teen Patti Live</h1><div class="panel"><div class="row"><input id="name" value="Player" maxlength="20" placeholder="Your name"><input id="room" maxlength="6" placeholder="Room code"></div><button id="create">Create Table</button><button id="join">Join Table</button><button id="start">Start Round</button><p id="msg" class="muted">Create a table or join one.</p></div><div class="table"><div><div class="muted">POT</div><div id="pot" class="pot">0</div><div id="round" class="muted">Round 0</div></div></div><div id="players" class="players"></div><div class="panel"><b>Your Cards</b><div id="hand" class="hand"></div><button data-bet="10">Bet 10</button><button data-bet="50">Bet 50</button><button data-bet="100">Bet 100</button></div></main><script src="/socket.io/socket.io.js"></script><script>const s=io(),$=id=>document.getElementById(id);let roomId=null,myId=null;s.on("connect",()=>{myId=s.id});function enter(mode){let name=$("name").value.trim()||"Player",id=$("room").value.trim().toUpperCase();s.emit(mode==="create"?"room:create":"room:join",mode==="create"?{name}:{name,roomId:id},r=>{if(!r?.ok)return $("msg").textContent=r?.error||"Error";roomId=r.roomId;$("room").value=roomId;$("msg").textContent="Room "+roomId+" ready."})}$("create").onclick=()=>enter("create");$("join").onclick=()=>enter("join");$("start").onclick=()=>{if(!roomId)return $("msg").textContent="Join a table first";s.emit("round:start",{roomId},r=>{if(!r?.ok)$("msg").textContent=r.error})};document.querySelectorAll("[data-bet]").forEach(b=>b.onclick=()=>s.emit("bet",{roomId,amount:+b.dataset.bet},r=>{if(!r?.ok)$("msg").textContent=r.error}));s.on("room:update",x=>{$("pot").textContent=x.pot;$("round").textContent="Round "+x.round+" • "+x.status;$("players").innerHTML=x.players.map(p=>'<div class="player '+(p.id===myId?"me":"")+'"><b>'+p.name.replace(/[&<>"']/g,"")+'</b><br>🪙 '+p.chips+'</div>').join("")});s.on("hand",cs=>{$("hand").innerHTML=cs.map(c=>'<div class="card '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.rank+c.suit+'</div>').join("")});</script></body></html>
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teen Patti Live</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#09111f;color:#fff;font-family:Arial,sans-serif}main{max-width:900px;margin:auto;padding:20px}
+.panel{background:#131d31;border:1px solid #2c3a58;border-radius:16px;padding:18px;margin:14px 0}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input,button{padding:12px;border-radius:10px;border:0;font-size:16px}input{background:#0a1325;color:white;border:1px solid #3a4968}
+button{background:#536dff;color:white;font-weight:bold;cursor:pointer;margin:6px 4px 0 0}.table{height:300px;border-radius:40%;background:#12442f;border:10px solid #58391f;display:flex;align-items:center;justify-content:center;text-align:center}
+.pot{font-size:30px;font-weight:bold}.players{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.player{background:#111a2c;border-radius:10px;padding:10px;text-align:center}.me{outline:2px solid #7385ff}
+.hand{display:flex;gap:10px;justify-content:center;margin-top:15px}.card{width:72px;height:105px;background:white;color:#111;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:bold}.red{color:#c22}.muted{color:#aab5cf}
+.badge{display:inline-block;background:#243352;padding:6px 10px;border-radius:999px;margin:4px 0;font-size:13px}
+@media(max-width:650px){.row{grid-template-columns:1fr}.players{grid-template-columns:repeat(2,1fr)}.table{height:230px;border-radius:25px}}
+</style></head>
+<body><main>
+<h1>♠ Teen Patti Live</h1>
+<div class="panel">
+  <div class="row"><input id="name" value="Player" maxlength="20" placeholder="Your name"><div class="badge" id="tableInfo">Table assign hone ka wait...</div></div>
+  <button id="play">Play Live</button><button id="start" disabled>Start Round</button>
+  <p id="msg" class="muted">Play Live dabao. Server automatically available table par seat karega.</p>
+</div>
+<div class="table"><div><div class="muted">POT</div><div id="pot" class="pot">0</div><div id="round" class="muted">Round 0 • waiting</div></div></div>
+<div id="players" class="players"></div>
+<div class="panel"><b>Your Cards</b><div id="hand" class="hand"></div>
+<button data-bet="10" disabled>Bet 10</button><button data-bet="50" disabled>Bet 50</button><button data-bet="100" disabled>Bet 100</button></div>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const s=io(),$=id=>document.getElementById(id);let myId=null,tableId=null,joined=false;
+s.on("connect",()=>{myId=s.id});
+$("play").onclick=()=>{
+  const name=$("name").value.trim()||"Player";
+  $("play").disabled=true;$("msg").textContent="Table search ho rahi hai...";
+  s.emit("player:join",{name},r=>{
+    if(!r?.ok){$("play").disabled=false;$("msg").textContent=r?.error||"Join error";return}
+    joined=true;tableId=r.tableId;$("tableInfo").textContent="Live "+r.tableNumber;
+    $("msg").textContent="Aapko automatically ek live table par seat mil gayi.";
+  });
+};
+$("start").onclick=()=>{if(!tableId)return;s.emit("round:start",{tableId},r=>{if(!r?.ok)$("msg").textContent=r.error})};
+document.querySelectorAll("[data-bet]").forEach(b=>b.onclick=()=>{if(!tableId)return;s.emit("bet",{tableId,amount:+b.dataset.bet},r=>{if(!r?.ok)$("msg").textContent=r.error})});
+s.on("table:update",x=>{
+  if(x.tableId!==tableId)return;
+  $("pot").textContent=x.pot;$("round").textContent="Round "+x.round+" • "+x.status;
+  $("players").innerHTML=x.players.map(p=>'<div class="player '+(p.id===myId?"me":"")+'"><b>'+p.name.replace(/[&<>"']/g,"")+'</b><br>🪙 '+p.chips+(p.connected?"":"<br><span class=\"muted\">offline</span>")+'</div>').join("");
+  const canStart=joined&&x.players.length>=2&&x.status==="waiting";$("start").disabled=!canStart;
+  document.querySelectorAll("[data-bet]").forEach(b=>b.disabled=x.status!=="playing");
+});
+s.on("hand",cs=>{$("hand").innerHTML=cs.map(c=>'<div class="card '+(/[♥♦]/.test(c.suit)?"red":"")+'">'+c.rank+c.suit+'</div>').join("")});
+</script></body></html>
