@@ -89,7 +89,7 @@ function compareHands(a,b){const x=handScore(a),y=handScore(b);for(let i=0;i<Mat
 
 function publicTable(t){
   const ps=[...t.players.values()],current=ps[t.turnIndex];
-  return {tableId:t.id,players:ps.map((p,i)=>({id:p.id,name:p.name,avatar:p.avatar||"",chips:p.chips,connected:p.connected,bet:p.bet,revealed:p.hand.length,seen:p.seen,turn:i===t.turnIndex})),pot:t.pot,currentChaal:t.currentChaal,round:t.round,phase:t.phase,cardNo:t.cardNo,discarded:t.discarded,currentPlayerId:current?.id||null,winner:t.winner,showdown:t.showdown};
+  return {tableId:t.id,players:ps.map((p,i)=>({id:p.id,name:p.name,avatar:p.avatar||"",chips:p.chips,connected:p.connected,bet:p.bet,revealed:p.hand.length,seen:p.seen,hand:t.showdown?p.hand:[],turn:i===t.turnIndex})),pot:t.pot,currentChaal:t.currentChaal,round:t.round,phase:t.phase,cardNo:t.cardNo,discarded:t.discarded,currentPlayerId:current?.id||null,winner:t.winner,showdown:t.showdown};
 }
 function sendTable(t){
   io.to(t.id).emit("table:update",publicTable(t));
