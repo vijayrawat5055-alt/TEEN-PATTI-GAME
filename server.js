@@ -20,6 +20,54 @@ function shuffle(a){for(let i=a.length-1;i;i--){const j=Math.floor(Math.random()
 function clientKey(s){return s.handshake.headers["x-forwarded-for"]?.split(",")[0]?.trim()||s.handshake.address;}
 function newTable(){const id="table-"+Date.now()+"-"+Math.random().toString(36).slice(2,7);const t={id,players:new Map(),round:0,deck:[],turnIndex:0,phase:"waiting",cardNo:0,pot:0,currentChaal:20,discarded:[],winner:null,showdown:null};tables.set(id,t);return t;}
 function activePlayers(t){return [...t.players.values()].filter(p=>p.hand.length>0);}
+function addBot(t){
+  if([...t.players.values()].some(p=>p.isBot)) return [...t.players.values()].find(p=>p.isBot);
+  if(t.players.size>=5) return null;
+  const id="bot-"+Date.now()+"-"+Math.random().toString(36).slice(2,6);
+  const bot={id,key:id,name:"Robo Player",avatar:"",chips:1000,connected:true,hand:[],seen:false,bet:0,round:0,isBot:true};
+  t.players.set(id,bot);return bot;
+}
+function botDraw(t){
+  const ps=[...t.players.values()],bot=ps[t.turnIndex];
+  if(!bot?.isBot||t.phase!=="draw")return;
+  if(bot.hand.length<3){bot.hand.push(t.deck.pop());t.cardNo=bot.hand.length;}
+  const allDealt=[...t.players.values()].filter(x=>x.connected).every(x=>x.hand.length===3);
+  if(allDealt){
+    const first=[...t.players.values()].findIndex(x=>x.connected&&!x.isBot);
+    t.turnIndex=first>=0?first:0;t.phase="action";t.cardNo=3;sendTable(t);
+    if([...t.players.values()][t.turnIndex]?.isBot)setTimeout(()=>botTurn(t),500);
+    return;
+  }
+  let i=t.turnIndex;
+  for(let step=0;step<ps.length;step++){i=(i+1)%ps.length;if(ps[i].connected&&ps[i].hand.length<3){t.turnIndex=i;break;}}
+  sendTable(t);
+  if(ps[t.turnIndex]?.isBot)setTimeout(()=>botDraw(t),450);
+}
+function botTurn(t){
+  const ps=[...t.players.values()],bot=ps[t.turnIndex];
+  if(!bot?.isBot||t.phase!=="action")return;
+  const active=activePlayers(t);
+  if(active.length===1){awardWinner(t,active[0],"last player remaining");sendTable(t);return;}
+  if(!bot.seen){bot.seen=true;sendTable(t);setTimeout(()=>botTurn(t),400);return;}
+  if(active.length===2&&Math.random()<0.25){
+    const other=active.find(x=>x.id!==bot.id),cmp=compareHands(bot.hand,other.hand);
+    t.showdown={players:active.map(x=>({id:x.id,name:x.name,cards:x.hand,score:handScore(x.hand)})),calledBy:bot.id};
+    if(cmp===0){
+      const gross=t.pot,fee=Math.floor(gross*0.03),net=gross-fee,share=Math.floor(net/2),rem=net-share*2;
+      houseWallet.coins+=fee;houseWallet.totalFees+=fee;bot.chips+=share+rem;other.chips+=share;
+      t.winner={id:null,name:"Tie",reason:"equal hands",grossPot:gross,fee,net};t.pot=0;t.phase="finished";
+    }else awardWinner(t,cmp>0?bot:other,"showdown");
+    sendTable(t);return;
+  }
+  if(Math.random()<0.15&&active.length>2){
+    t.discarded.push({playerId:bot.id,name:bot.name,cards:bot.hand});bot.hand=[];bot.seen=false;
+    nextTurn(t);sendTable(t);if([...t.players.values()][t.turnIndex]?.isBot)setTimeout(()=>botTurn(t),500);return;
+  }
+  const n=Math.max(20,t.currentChaal);
+  if(n>bot.chips){awardWinner(t,active.find(x=>x.id!==bot.id)||bot,"bot out of coins");sendTable(t);return;}
+  bot.chips-=n;bot.bet+=n;t.pot+=n;t.currentChaal=n;nextTurn(t);sendTable(t);
+  if([...t.players.values()][t.turnIndex]?.isBot)setTimeout(()=>botTurn(t),500);
+}
 
 function handScore(hand){
   const cards=[...hand].sort((a,b)=>rankValue[b.rank]-rankValue[a.rank]);
@@ -79,9 +127,9 @@ io.on("connection",s=>{
   s.on("round:start",(d,a)=>{
     const t=tables.get(d?.tableId);
     if(!t||!t.players.has(s.id))return a?.({ok:false,error:"Table not found"});
-    if(t.players.size<2)return a?.({ok:false,error:"At least 2 players chahiye"});
+    if(t.players.size===1)addBot(t);
     if(t.phase!=="waiting"&&t.phase!=="finished")return a?.({ok:false,error:"Round already running"});
-    startRound(t);a?.({ok:true});
+    startRound(t);a?.({ok:true});setTimeout(()=>{const first=[...t.players.values()][t.turnIndex];if(first?.isBot)botDraw(t);},500);
   });
 
   s.on("draw",(d,a)=>{
@@ -92,7 +140,7 @@ io.on("connection",s=>{
     const allDealt=[...t.players.values()].filter(x=>x.connected).length>0&&[...t.players.values()].filter(x=>x.connected).every(x=>x.hand.length===3);
     if(allDealt){t.turnIndex=[...t.players.values()].findIndex(x=>x.connected);t.phase="action";t.cardNo=3;}
     else {let i=t.turnIndex;for(let step=0;step<ps.length;step++){i=(i+1)%ps.length;if(ps[i].connected&&ps[i].hand.length<3){t.turnIndex=i;break;}}t.phase="draw";}
-    sendTable(t);a?.({ok:true});
+    sendTable(t);a?.({ok:true});if([...t.players.values()][t.turnIndex]?.isBot)setTimeout(()=>botDraw(t),450);
   });
 
   s.on("view",(d,a)=>{
@@ -108,7 +156,7 @@ io.on("connection",s=>{
     if(n<t.currentChaal)return a?.({ok:false,error:"Chaal "+t.currentChaal+" se kam nahi ho sakti"});
     if(n>p.chips)return a?.({ok:false,error:"Aapke paas itne coins nahi hain"});
     p.chips-=n;p.bet+=n;t.pot+=n;t.currentChaal=n;
-    nextTurn(t);sendTable(t);a?.({ok:true});
+    nextTurn(t);sendTable(t);a?.({ok:true});if([...t.players.values()][t.turnIndex]?.isBot)setTimeout(()=>botTurn(t),500);
   });
 
   s.on("pack",(d,a)=>{
@@ -118,7 +166,7 @@ io.on("connection",s=>{
     p.hand=[];p.seen=false;
     const active=activePlayers(t);
     if(active.length===1){awardWinner(t,active[0],"last player remaining");sendTable(t);return a?.({ok:true,winner:active[0].id});}
-    nextTurn(t);sendTable(t);a?.({ok:true});
+    nextTurn(t);sendTable(t);a?.({ok:true});if([...t.players.values()][t.turnIndex]?.isBot)setTimeout(()=>botTurn(t),500);
   });
 
   s.on("show",(d,a)=>{
