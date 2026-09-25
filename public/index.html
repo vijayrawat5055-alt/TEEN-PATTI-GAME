@@ -1,53 +1,23 @@
-<!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teen Patti 3D Live</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#162846,#050914 65%);color:#fff;font-family:Arial,sans-serif;min-height:100vh}
-main{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:10px;align-items:center}.panel{background:rgba(16,26,46,.88);border:1px solid #344767;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 12px 35px #0008}
-.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}input,button{padding:12px;border-radius:11px;border:0;font-size:15px}input{background:#091325;color:#fff;border:1px solid #405174}button{background:#586fff;color:#fff;font-weight:bold;cursor:pointer;margin:5px 3px}button:disabled{opacity:.4;cursor:not-allowed}
-.badge{display:inline-block;background:#223250;padding:7px 10px;border-radius:999px;font-size:13px}.muted{color:#aebbd3}.msg{min-height:20px}
-.table{position:relative;margin:18px auto;width:min(92vw,980px);height:560px;border-radius:8px;background:linear-gradient(145deg,#114d35,#082d21);border:12px solid #633f22;box-shadow:inset 0 0 0 4px #9a6837,0 25px 60px #0009;perspective:1200px;overflow:hidden}
-.table:before{content:"";position:absolute;inset:18px;border:2px solid #b58a52;border-radius:4px;opacity:.55}
-.center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.centerbox{text-align:center;background:#06281cbb;padding:18px 28px;border:1px solid #7da16d;border-radius:18px;box-shadow:0 10px 30px #0006}
-.pot{font-size:34px;font-weight:800}.deck3d{width:86px;height:122px;position:relative;margin:15px auto;transform:rotateX(10deg) rotateZ(-5deg);transform-style:preserve-3d;animation:float 2.4s ease-in-out infinite}.deck3d div{position:absolute;inset:0;border-radius:10px;background:repeating-linear-gradient(45deg,#172b58 0 4px,#263d70 4px 8px);border:4px solid #f3e5c2;box-shadow:0 8px 16px #0008}
-@keyframes float{50%{transform:rotateX(10deg) rotateZ(5deg) translateY(-5px)}}.seat{position:absolute;width:170px;text-align:center;padding:8px}.seat1{top:12px;left:50%;transform:translateX(-50%)}.seat2{top:145px;right:15px}.seat3{bottom:25px;right:110px}.seat4{bottom:25px;left:110px}.seat5{top:145px;left:15px}
-.avatar{width:62px;height:62px;border-radius:50%;object-fit:cover;border:3px solid #d7b66b;background:#18243b;display:block;margin:auto;box-shadow:0 8px 15px #0009}.name{font-weight:800;margin-top:5px}.chips{font-size:13px;color:#d6e0ef}.turn{outline:3px solid #ffd66b;outline-offset:4px;animation:pulse 1s infinite}.offline{opacity:.45}
-@keyframes pulse{50%{box-shadow:0 0 22px #ffd66b}}.hand{display:flex;gap:12px;justify-content:center;min-height:128px;margin-top:12px;perspective:900px}.card{width:78px;height:112px;border-radius:10px;background:linear-gradient(145deg,#fff,#e6e0d3);color:#151515;border:3px solid #fff;box-shadow:0 12px 22px #0008;display:flex;flex-direction:column;justify-content:space-between;padding:7px;font-weight:800}.card .big{font-size:30px;text-align:center;margin:auto}.red{color:#b51f2b}.gameBtn{min-width:145px}.packBtn{background:#a83a3a}.viewBtn{background:#2d8a68}.showBtn{background:#d08a24}.dealCard{position:fixed;z-index:20;width:62px;height:90px;border-radius:9px;background:repeating-linear-gradient(45deg,#172b58 0 5px,#2e477c 5px 10px);border:3px solid #e9d6a5;box-shadow:0 12px 25px #000b;pointer-events:none;transition:transform .7s ease,opacity .25s}.playersbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.mini{background:#0d1729;border:1px solid #33435f;border-radius:12px;padding:8px}.profileRow{display:flex;align-items:center;gap:10px}.preview{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #65769b}
-@media(max-width:750px){.row{grid-template-columns:1fr}.table{height:460px}.seat{width:130px}.seat2{right:0}.seat3{right:35px}.seat4{left:35px}.seat5{left:0}.avatar{width:52px;height:52px}.centerbox{padding:12px 18px}.hand .card{width:65px;height:95px}}
-</style></head>
-<body><main>
-<div class="top"><h1>♠ Teen Patti 3D Live</h1><div class="badge" id="tableInfo">Table assign hone ka wait...</div></div>
-<div class="panel"><div class="row">
-<input id="name" value="Player" maxlength="20" placeholder="Your name">
-<div class="profileRow"><input id="avatar" type="file" accept="image/*"><img id="preview" class="preview" alt="Profile preview"></div>
-<button id="play">Play Live</button>
-</div><div id="msg" class="muted msg">Profile picture choose karo, phir Play Live dabao.</div></div>
-
-<div class="table">
-<div class="seat seat1" id="seat1"></div><div class="seat seat2" id="seat2"></div><div class="seat seat3" id="seat3"></div><div class="seat seat4" id="seat4"></div><div class="seat seat5" id="seat5"></div>
-<div class="center"><div class="centerbox"><div class="muted">POT</div><div id="pot" class="pot">0</div><div id="status">Waiting for players</div><div id="winnerText" class="winnerText"></div><div id="discarded" class="hand" style="min-height:95px"></div><div class="deck3d"><div></div><div></div><div></div></div></div></div>
-</div>
-
-<div class="panel actions">
-<div class="turnText" id="turnText">Round start hone ka wait...</div>
-<button id="start" disabled>Start Round</button>
-<div id="hand" class="hand"></div>
-<div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
-<div id="blindActions">
-<input id="betAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+">
-<button id="blind" class="gameBtn" disabled>🕶️ Blind Chaal</button>
-<button id="view" class="gameBtn viewBtn" disabled>👀 View Cards</button>
-</div>
-<div id="seenActions" style="display:none">
-<input id="chaalAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+">
-<button id="chaal" class="gameBtn" disabled>🪙 Chaal</button>
-<button id="pack" class="gameBtn packBtn" disabled>✋ Pack</button>
-<button id="show" class="gameBtn showBtn" disabled>👀 Show</button>
-</div>
-</div>
-<div class="panel"><b>Live Players</b><div id="players" class="playersbar"></div></div>
-</main>
-<script src="/socket.io/socket.io.js"></script>
-<script>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teen Patti Live</title><style>
+:root{--gold:#d7ad52;--gold2:#ffe08a;--green:#0b4a32;--deep:#050301}
+*{box-sizing:border-box}body{margin:0;color:#fff;font-family:Arial,sans-serif;background:radial-gradient(circle at 50% 0,#3a1807 0,#120702 42%,#030201 100%);min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,transparent 20%,#000b 85%)}
+main{max-width:1280px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:26px;font-weight:900;letter-spacing:1px}.badge,.hud{border:1px solid #76551b;background:#090604dd;box-shadow:0 5px 20px #0008;border-radius:12px;padding:10px 14px}.panel{background:#080604dd;border:1px solid #65491a;border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 14px 35px #000a}.row{display:grid;grid-template-columns:1fr 1fr 150px;gap:10px}input,button{padding:12px;border-radius:10px;border:1px solid #76551b;font-size:15px}input{background:#0a0806;color:#fff}button{background:linear-gradient(#dfbb57,#8e631e);color:#fff;font-weight:800;cursor:pointer}button:disabled{opacity:.35;cursor:not-allowed}.muted{color:#c8bda5}.msg{min-height:20px}
+.table{position:relative;margin:18px auto;width:min(96vw,1120px);height:610px;border-radius:22px;background:linear-gradient(145deg,#0c5639,#052619 72%);border:18px solid #4c2a12;box-shadow:inset 0 0 0 3px #d19a45,inset 0 0 45px #000a,0 28px 70px #000c;overflow:hidden}
+.table:before{content:"";position:absolute;inset:18px;border:2px solid #bd8a40;border-radius:14px;opacity:.6}.table:after{content:"TEEN PATTI";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) rotate(-7deg);font-size:54px;font-weight:900;color:#ffffff0b;letter-spacing:3px;pointer-events:none}
+.center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.centerbox{text-align:center;min-width:250px}.pot{font-size:34px;font-weight:900;text-shadow:0 2px 5px #000}.deck3d{width:74px;height:108px;position:relative;margin:12px auto;transform:rotate(-5deg);animation:float 2.2s ease-in-out infinite}.deck3d div{position:absolute;inset:0;border-radius:8px;background:repeating-linear-gradient(45deg,#8c1717 0 4px,#c3322d 4px 8px);border:3px solid #f3e2b9;box-shadow:0 8px 16px #0008}.deck3d div:nth-child(2){transform:translate(5px,-4px)}.deck3d div:nth-child(3){transform:translate(10px,-8px)}@keyframes float{50%{transform:rotate(4deg) translateY(-5px)}}
+.seat{position:absolute;width:190px;text-align:center;padding:8px;z-index:2}.seat1{top:4px;left:50%;transform:translateX(-50%)}.seat2{top:145px;right:15px}.seat3{bottom:18px;right:120px}.seat4{bottom:18px;left:120px}.seat5{top:145px;left:15px}.avatar{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--gold2);background:#17110b;display:block;margin:auto;box-shadow:0 5px 18px #000b}.name{font-weight:900;font-size:16px;margin-top:5px;text-shadow:0 2px 4px #000}.chips{display:inline-block;margin-top:4px;padding:5px 14px;border-radius:14px;background:#070504e8;border:1px solid #8e681e;color:#f4e6bf}.turn{filter:drop-shadow(0 0 12px #ffe17a);}.turn .avatar{box-shadow:0 0 0 3px #ffe17a,0 0 25px #ffd44d}.offline{opacity:.45}
+.hand{display:flex;gap:10px;justify-content:center;min-height:128px;margin-top:8px}.card{width:78px;height:112px;border-radius:9px;background:linear-gradient(145deg,#fff,#ddd8ce);color:#151515;border:2px solid #fff;box-shadow:0 10px 22px #0009;display:flex;flex-direction:column;justify-content:space-between;padding:7px;font-weight:900}.card .big{font-size:31px;text-align:center;margin:auto}.red{color:#bd1e2c}.actions{position:relative}.actions .turnText{font-weight:900;color:#ffe19a}.gameBtn{min-width:145px}.packBtn{background:linear-gradient(#e74b42,#8e1d1d)}.viewBtn{background:linear-gradient(#35ad83,#126d4d)}.showBtn{background:linear-gradient(#e4a83e,#88570d)}.dealCard{position:fixed;z-index:20;width:54px;height:78px;border-radius:8px;background:repeating-linear-gradient(45deg,#8c1717 0 4px,#c3322d 4px 8px);border:3px solid #e9d6a5;box-shadow:0 12px 25px #000b;pointer-events:none;transition:transform .7s ease,opacity .25s}.playersbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.mini{background:#0b0806;border:1px solid #60491d;border-radius:12px;padding:8px}.profileRow{display:flex;align-items:center;gap:10px}.preview{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #b88735}.topActions{display:flex;gap:8px}.topActions .hud{font-size:13px}
+@media(max-width:750px){main{padding:8px}.row{grid-template-columns:1fr}.table{height:500px;border-width:10px}.seat{width:135px}.seat2{right:-5px}.seat3{right:25px}.seat4{left:25px}.seat5{left:-5px}.avatar{width:58px;height:58px}.centerbox{transform:scale(.82)}.brand{font-size:20px}.topActions{display:none}}
+</style></head><body><main>
+<div class="top"><div class="brand">♠ TEEN PATTI LIVE</div><div class="topActions"><div class="hud">ⓘ Info</div><div class="hud">💬 Chat</div><div class="hud">⚙ Settings</div></div><div class="badge" id="tableInfo">Table assign hone ka wait...</div></div>
+<div class="panel"><div class="row"><input id="name" value="Player" maxlength="20" placeholder="Your name"><div class="profileRow"><input id="avatar" type="file" accept="image/*"><img id="preview" class="preview" alt="Profile preview"></div><button id="play">Play Live</button></div><div id="msg" class="muted msg">Profile picture choose karo, phir Play Live dabao.</div></div>
+<div class="table"><div class="seat seat1" id="seat1"></div><div class="seat seat2" id="seat2"></div><div class="seat seat3" id="seat3"></div><div class="seat seat4" id="seat4"></div><div class="seat seat5" id="seat5"></div>
+<div class="center"><div class="centerbox"><div class="muted">POT AMOUNT</div><div id="pot" class="pot">0</div><div id="status">Waiting for players</div><div id="winnerText"></div><div id="discarded" class="hand" style="min-height:80px"></div><div class="deck3d"><div></div><div></div><div></div></div></div></div></div>
+<div class="panel actions"><div class="turnText" id="turnText">Round start hone ka wait...</div><button id="start" disabled>▶ Start Round</button><div id="hand" class="hand"></div><div id="choiceText" class="muted">Aapki turn par pehle card milega.</div>
+<div id="blindActions"><input id="betAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+"><button id="blind" class="gameBtn" disabled>🕶️ Blind Chaal</button><button id="view" class="gameBtn viewBtn" disabled>👀 View Cards</button></div>
+<div id="seenActions" style="display:none"><input id="chaalAmount" type="number" min="20" step="10" value="20" style="width:120px" placeholder="20+"><button id="chaal" class="gameBtn" disabled>🪙 Chaal</button><button id="pack" class="gameBtn packBtn" disabled>✋ Pack</button><button id="show" class="gameBtn showBtn" disabled>👀 Show</button></div></div>
+<div class="panel"><b>Live Players</b><div id="players" class="playersbar"></div></div></main><script src="/socket.io/socket.io.js"></script><script>
 const s=io(),$=id=>document.getElementById(id);let myId=null,tableId=null,joined=false,avatarData="",lastTurn=null;
 const defaultAvatar=name=>"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#243552"/><text x="60" y="72" text-anchor="middle" font-size="58" fill="white">'+(name||"P").charAt(0).toUpperCase()+"</text></svg>");
 $("avatar").addEventListener("change",e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>1200000){$("msg").textContent="Photo 1.2MB se chhoti rakho.";e.target.value="";return}const rd=new FileReader();rd.onload=()=>{avatarData=rd.result;$("preview").src=avatarData};rd.readAsDataURL(f)});
